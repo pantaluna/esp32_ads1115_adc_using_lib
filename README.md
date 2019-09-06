@@ -1,5 +1,5 @@
 ## Project Description
-This project demonstrates the basics of using the MJD ESP-IDF component "mjd_ads1115" for the ESP32 and the popular breakout boards of the **TI ADS1115 Ultra-Small, Low-Power, I2C-Compatible, 860-SPS, 16-Bit ADCs With Internal Reference, Oscillator, and Programmable Comparator** using the **I2C Bus**.
+This project demonstrates the basics of using the MJD ESP-IDF component "**mjd_ads1115**" for the ESP32 and the popular breakout boards of the **TI ADS1115 Ultra-Small, Low-Power, I2C-Compatible, 860-SPS, 16-Bit ADCs With Internal Reference, Oscillator, and Programmable Comparator** using the **I2C Bus**.
 
 Go to the component directory "components/mjd_ads1115" for more documentation, suggested breakout boards (if relevant), installation and wiring instructions, data sheets, FAQ, photo's, etc.
 
@@ -9,10 +9,8 @@ Go to the component directory "components/mjd_ads1115" for more documentation, s
 
 ### Hardware
 
-- A decent ESP development board. I suggest to buy a popular development board with good technical documentation and a significant user base. Examples: [Adafruit HUZZAH32](https://www.adafruit.com/product/3405),  [Espressif ESP32-DevKitC](http://espressif.com/en/products/hardware/esp32-devkitc/overview), [Pycom WiPy](https://pycom.io/hardware/), [Wemos D32](https://wiki.wemos.cc/products:d32:d32).
-- The peripherals that are used in the project.
-  @tip The README of each component contains a section "Shop Products".
-  @example A Bosch BME280 meteo sensor breakout board.
+- A decent ESP development board. I suggest to buy a popular development board with good technical documentation and a significant user base. Examples: LOLIN D32, [Adafruit HUZZAH32](https://www.adafruit.com/product/3405),  [Espressif ESP32-DevKitC](http://espressif.com/en/products/hardware/esp32-devkitc/overview), [Pycom WiPy](https://pycom.io/hardware/), [Wemos D32](https://wiki.wemos.cc/products:d32:d32).
+- The peripherals that are used in the project. Tip The README of each component contains a section "Shop Products".
 
 ### Software: ESP-IDF v3.2
 
@@ -21,7 +19,7 @@ Go to the component directory "components/mjd_ads1115" for more documentation, s
 ```
 mkdir ~/esp
 cd    ~/esp
-git clone -b v3.3 --recursive https://github.com/espressif/esp-idf.git esp-idf-v3.2
+git clone -b v3.2 --recursive https://github.com/espressif/esp-idf.git esp-idf-v3.2
 ```
 
 - A C language editor or the Eclipse IDE CDT (instructions also @ http://esp-idf.readthedocs.io/en/latest/get-started/index.html).
@@ -42,18 +40,18 @@ A 10K potentiometer can also be used, instead of the voltage divider using 2 res
 ```
 ADS1115 PIN LAYOUT:
 
-PIN#  PIN NAME  Description
-----  --------  -----------
- 1    V VCC     Power supply (3.3V for the ESP32)
- 2    G GND     Ground
- 3    SCL       I2C Serial Clock
- 4    SDA       I2C Serial Data
- 5    ADDR      I2C slave address select
- 6    ALR/RDY   Comparator output or conversion ready
- 7    A0        Analog input 0
- 8    A1        Analog input 1
- 9    A2        Analog input 2
-10    A3        Analog input 3
+PIN#  PIN NAME    Description
+----  --------    -----------
+ 1    V VCC       Power supply (3.3V for the ESP32)
+ 2    G GND       Ground
+ 3    SCL         I2C Serial Clock (the breakout board contains a 10K pullup resistor)
+ 4    SDA         I2C Serial Data (the breakout board contains a 10K pullup resistor)
+ 5    ADDR        I2C slave address select
+ 6    ALERT/RDY   Alert output / conversion ready (the breakout board contains a 10K pullup resistor)
+ 7    A0          Analog input 0
+ 8    A1          Analog input 1
+ 9    A2          Analog input 2
+10    A3          Analog input 3
 ```
 
 ![](_doc/Wiring Diagram - Project esp32_ads1115_adc_using_lib-01.png)
@@ -121,6 +119,7 @@ I (2929) myapp:   ***ADS1115 MEAS#2***
 I (3059) myapp:     A0: raw_value (signed int16):     0 | volt_value (float): 0.000
 I (3189) myapp:     A1: raw_value (signed int16): 13220 | volt_value (float): 1.653
 I (3319) myapp:     A2: raw_value (signed int16): 26412 | volt_value (float): 3.302
+. . .
 . . .
 . . .
 I (40759) myapp:   ***ADS1115 MEAS#99***

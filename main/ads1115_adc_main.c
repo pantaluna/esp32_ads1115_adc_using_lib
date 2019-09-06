@@ -41,7 +41,7 @@ void peripheral_task(void *pvParameter) {
     esp_err_t f_retval;
 
     mjd_led_config_t led_config =
-        { 0 };
+                { 0 };
     led_config.gpio_num = MY_LED_ON_DEVBOARD_GPIO_NUM; // (Huzzah32 #13) (Lolin32lite #22)
     led_config.wiring_type = MY_LED_ON_DEVBOARD_WIRING_TYPE; // (Huzzah32 1=GND) (Lolin32lite 2=VCC)
     mjd_led_config(&led_config);
@@ -53,12 +53,12 @@ void peripheral_task(void *pvParameter) {
 
     // @important Do not use ={} or ={0}
     mjd_ads1115_config_t ads1115_config = MJD_ADS1115_CONFIG_DEFAULT()
-    ;
+            ;
     ads1115_config.i2c_slave_addr = MY_ADS1115_I2C_SLAVE_ADDRESS;
     ads1115_config.i2c_port_num = MY_ADS1115_I2C_MASTER_PORT_NUM;
     ads1115_config.i2c_scl_gpio_num = MY_ADS1115_I2C_SCL_GPIO_NUM;
     ads1115_config.i2c_sda_gpio_num = MY_ADS1115_I2C_SDA_GPIO_NUM;
-    // @tip Omit this line if you do not want to use the ALERT READY PIN (the component will wait a specified milisec-time depending on params).
+    // @tip Omit this line if you do not want to use the ALERT READY PIN (the component will wait a specified milisec-time depending on config params).
     ads1115_config.alert_ready_gpio_num = MY_ADS1115_ALERT_READY_GPIO_NUM;
     ads1115_config.data_rate = MY_ADS1115_DATA_RATE;
 
@@ -85,14 +85,22 @@ void peripheral_task(void *pvParameter) {
      */
 
     mjd_ads1115_data_t ads1115_data =
-        { 0 };
+                { 0 };
     uint32_t nbr_of_adc_errors = 0;
-    float a0_sum_volt_value = 0, a0_min_volt_value = FLT_MAX, a0_max_volt_value = FLT_MIN;
-    float a1_sum_volt_value = 0, a1_min_volt_value = FLT_MAX, a1_max_volt_value = FLT_MIN;
-    float a2_sum_volt_value = 0, a2_min_volt_value = FLT_MAX, a2_max_volt_value = FLT_MIN;
+    float a0_sum_volt_value = 0;
+    float a0_min_volt_value = FLT_MAX;
+    float a0_max_volt_value = FLT_MIN;
+    float a1_sum_volt_value = 0;
+    float a1_min_volt_value = FLT_MAX;
+    float a1_max_volt_value = FLT_MIN;
+    float a2_sum_volt_value = 0;
+    float a2_min_volt_value = FLT_MAX;
+    float a2_max_volt_value = FLT_MIN;
     mjd_log_time();
-    const uint32_t NBR_OF_RUNS = 1000;
+
+    const uint32_t NBR_OF_RUNS = 250; // 250 10000
     ESP_LOGI(TAG, "LOOP: NBR_OF_RUNS %u", NBR_OF_RUNS);
+
     for (uint32_t j = 1; j <= NBR_OF_RUNS; ++j) {
         mjd_led_on(MY_LED_ON_DEVBOARD_GPIO_NUM);
 
@@ -103,7 +111,8 @@ void peripheral_task(void *pvParameter) {
         if (f_retval != ESP_OK) {
             mjd_led_mark_error(MY_LED_ON_DEVBOARD_GPIO_NUM);
             ++nbr_of_adc_errors;
-            ESP_LOGE(TAG, "%s(). Cannot Set Mux | err %i (%s)", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
+            ESP_LOGE(TAG, "%s(). Cannot Set Mux MJD_ADS1115_MUX_0_GND | err %i (%s)", __FUNCTION__, f_retval,
+                    esp_err_to_name(f_retval));
             // CONTINUE
             continue;
         }
@@ -115,7 +124,8 @@ void peripheral_task(void *pvParameter) {
             // CONTINUE
             continue;
         }
-        ESP_LOGI(TAG, "    A0: raw_value (signed int16): %5i | volt_value (float): %.3f", ads1115_data.raw_value, ads1115_data.volt_value);
+        ESP_LOGI(TAG, "    A0: raw_value (s int16): %5i | volt_value (float): %.3f", ads1115_data.raw_value,
+                ads1115_data.volt_value);
         a0_sum_volt_value += ads1115_data.volt_value;
         if (ads1115_data.volt_value < a0_min_volt_value) {
             a0_min_volt_value = ads1115_data.volt_value;
@@ -129,7 +139,8 @@ void peripheral_task(void *pvParameter) {
         if (f_retval != ESP_OK) {
             mjd_led_mark_error(MY_LED_ON_DEVBOARD_GPIO_NUM);
             ++nbr_of_adc_errors;
-            ESP_LOGE(TAG, "%s(). Cannot Set Mux | err %i (%s)", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
+            ESP_LOGE(TAG, "%s(). Cannot Set Mux MJD_ADS1115_MUX_1_GND | err %i (%s)", __FUNCTION__, f_retval,
+                    esp_err_to_name(f_retval));
             // CONTINUE
             continue;
         }
@@ -141,7 +152,8 @@ void peripheral_task(void *pvParameter) {
             // CONTINUE
             continue;
         }
-        ESP_LOGI(TAG, "    A1: raw_value (signed int16): %5i | volt_value (float): %.3f", ads1115_data.raw_value, ads1115_data.volt_value);
+        ESP_LOGI(TAG, "    A1: raw_value (s int16): %5i | volt_value (float): %.3f", ads1115_data.raw_value,
+                ads1115_data.volt_value);
         a1_sum_volt_value += ads1115_data.volt_value;
         if (ads1115_data.volt_value < a1_min_volt_value) {
             a1_min_volt_value = ads1115_data.volt_value;
@@ -155,7 +167,8 @@ void peripheral_task(void *pvParameter) {
         if (f_retval != ESP_OK) {
             mjd_led_mark_error(MY_LED_ON_DEVBOARD_GPIO_NUM);
             ++nbr_of_adc_errors;
-            ESP_LOGE(TAG, "%s(). Cannot Set Mux | err %i (%s)", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
+            ESP_LOGE(TAG, "%s(). Cannot Set Mux MJD_ADS1115_MUX_2_GND | err %i (%s)", __FUNCTION__, f_retval,
+                    esp_err_to_name(f_retval));
             // CONTINUE
             continue;
         }
@@ -167,7 +180,8 @@ void peripheral_task(void *pvParameter) {
             // CONTINUE
             continue;
         }
-        ESP_LOGI(TAG, "    A2: raw_value (signed int16): %5i | volt_value (float): %.3f", ads1115_data.raw_value, ads1115_data.volt_value);
+        ESP_LOGI(TAG, "    A2: raw_value (signed int16): %5i | volt_value (float): %.3f", ads1115_data.raw_value,
+                ads1115_data.volt_value);
         a2_sum_volt_value += ads1115_data.volt_value;
         if (ads1115_data.volt_value < a2_min_volt_value) {
             a2_min_volt_value = ads1115_data.volt_value;
@@ -178,8 +192,8 @@ void peripheral_task(void *pvParameter) {
 
         mjd_led_off(MY_LED_ON_DEVBOARD_GPIO_NUM);
 
-        // @optional A visual delay between reading loop items, is sometimes easier when debugging
-        /////vTaskDelay(RTOS_DELAY_1SEC);
+        // @optional A visual delay between reading loop items, that is sometimes handy when debugging
+        vTaskDelay(RTOS_DELAY_1SEC);
 
     }
     mjd_ads1115_log_device_parameters(&ads1115_config);
@@ -236,12 +250,13 @@ void app_main() {
     ESP_LOGI(TAG, "@doc Wait 2 seconds after power-on (start logic analyzer, let peripherals become active, ...)");
     vTaskDelay(RTOS_DELAY_2SEC);
 
-/*
+    /*
      * Sensor Task
      */
-    xReturned = xTaskCreatePinnedToCore(&peripheral_task, "peripheral_task (name)", MYAPP_RTOS_TASK_STACK_SIZE_8K, NULL, RTOS_TASK_PRIORITY_NORMAL,
-            NULL,
-            APP_CPU_NUM);
+    xReturned = xTaskCreatePinnedToCore(&peripheral_task, "peripheral_task (name)", MYAPP_RTOS_TASK_STACK_SIZE_8K, NULL,
+    RTOS_TASK_PRIORITY_NORMAL,
+    NULL,
+    APP_CPU_NUM);
     if (xReturned == pdPASS) {
         ESP_LOGI(TAG, "OK Task has been created, and is running right now");
     }
